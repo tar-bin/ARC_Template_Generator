@@ -1,4 +1,8 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.1.10/vue.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
 
 <style type="text/css">
 @font-face{
@@ -15,52 +19,102 @@
     font-size:16px;
 }
 
-html, body, #editor {
+html, body {
   margin: 0;
+  width: 100%;
   height: 100%;
   background-color: #f6f6f6;
 }
-
-textarea, #editor div {
-  display: inline-block;
+.template_itemdefinearea {
+  width: 100%;
+  height: 5%;
+  margin: 10px;
+}
+.template_textarea_div {
   width: 100%;
   height: 50%;
-  vertical-align: top;
-  -webkit-box-sizing: border-box;
-  -moz-box-sizing: border-box;
-  box-sizing: border-box;
-  background-color: #f6f6f6;
-  padding: 0 20px;
+  margin: 10px;
 }
-textarea {
-  border: none;
-  border-top: 1px solid #ccc;
-  resize: none;
-  outline: none;
-  background-color: #f6f6f6;
-  padding: 20px;
+.template_textarea {
+  width: 100%;
+  height: 90%;
+}
+.template_inputarea {
+  overflow: scroll;
+  width: 100%;
+  height: 45%;
+  margin: 10px;
+}
+.output_textarea {
+  width: 100%;
+  height: 100%;
 }
 </style>
 
 <div id="editor">
-    <textarea class="aa" v-model="input" debounce="300"></textarea>
-    <textarea class="aa" v-model="input" debounce="300"></textarea>
+  <div class="row">
+    <div class="col-md-6">
+      <form class="form-horizontal template_itemdefinearea">
+        <div class="form-group">
+          <label class="col-sm-2 control-label">テンプレート</label>
+          <div class="col-sm-10">
+            <input type="text" class="form-control" placeholder="カンマ区切りでリストを入力してください" v-model="items_define">
+          </div>
+        </div>
+      </form>
+      <div class="template_textarea_div">
+        <textarea class="template_textarea aa" v-model="input" debounce="300"></textarea>
+        <span id="helpBlock2" class="help-block">{{ help_message }}</span>
+      </div>
+      <div class="template_inputarea">
+        <form class="form-horizontal">
+          <template v-for="item in items">
+            <div class="form-group">
+              <label for="inputPassword" class="col-sm-2 control-label">{{ item }}</label>
+              <div class="col-sm-10">
+                <input type="text" class="form-control" v-bind:placeholder="item" v-model="item_datas[item]" v-on:keyup="updateOutput" debounce="300">
+              </div>
+            </div>
+          </template>
+        </form>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <textarea class="output_textarea aa" v-model="output" debounce="300"></textarea>
+    </div>
+  </div>
 </div>
 
 <script>
 (function() {
+  var template_files = {
+    card_description: {
+      filepath: "template/card_description_template.txt",
+      template_item_list: "カード名, メイン属性, サブ属性, レアリティ, 汎用スキル１, 汎用スキル２, カードスキル, 武装化, AP, RP, CP, フレーバー",
+      template_items_default_data: {
+         "カード名": "無名英雄",
+         "メイン属性": "勇気",
+         "サブ属性": "ヒーロー",
+         "レアリティ": "E",
+         "汎用スキル１": "【エゴ】",
+         "汎用スキル２": "【残響】",
+         "カードスキル": "残響：デッキからヒーローカードをランダムに一枚手札に加える",
+         "武装化": "-",
+         "AP": "02",
+         "RP": "04",
+         "CP": "03",
+         "フレーバー": "俺は脇役だ。だけど英雄になれない理由はない。――無名英雄"
+      }
+    }
+  }
 
-  function readTextFile(file)
-  {
+  function readTextFile(file) {
       var allText = "";
       var rawFile = new XMLHttpRequest();
       rawFile.open("GET", file, false);
-      rawFile.onreadystatechange = function ()
-      {
-          if(rawFile.readyState === 4)
-          {
-              if(rawFile.status === 200 || rawFile.status == 0)
-              {
+      rawFile.onreadystatechange = function () {
+          if(rawFile.readyState === 4) {
+              if(rawFile.status === 200 || rawFile.status == 0) {
                   allText = rawFile.responseText;
               }
           }
@@ -72,7 +126,47 @@ textarea {
   var vue = new Vue({
       el: '#editor',
       data: {
-          input: readTextFile("template/card_description_template.txt")
+          input: readTextFile(template_files.card_description.filepath),
+          output: "",
+          items_define: template_files.card_description.template_item_list,
+          items: [],
+          item_datas: template_files.card_description.template_items_default_data,
+          help_message: "{{ keyword }} でテンプレート入力できます"
+      },
+      watch: {
+        items_define: function(val, oldVal) {
+          this.items = this.trimItems(val);
+        },
+        input: function(val, oldVal) {
+          if (!val) return '';
+          this.output = this.updateTemplate(val, this.item_datas);
+        },
+        item_datas: function(val, oldVal) {
+          if (!val) return '';
+          this.output = this.updateTemplate(this.input, val);
+        }
+      },
+      methods: {
+        trimItems: function(val) {
+          var items = val.split(/[\s,]+/).join().split(',');
+          for (var item in items) {
+            item = item.trim();
+          }
+          return items;
+        },
+        updateTemplate: function (string, values){
+          return string.replace(/\{\{(.*?)\}\}/g, function(all, key){
+            key = key.trim();
+            return Object.prototype.hasOwnProperty.call(values, key) ? values[key] : "";
+          });
+        },
+        updateOutput() {
+          this.output = this.updateTemplate(this.input, this.item_datas);
+        }
+      },
+      created() {
+        this.items = this.trimItems(template_files.card_description.template_item_list);
+        this.updateOutput();
       }
   });
 
