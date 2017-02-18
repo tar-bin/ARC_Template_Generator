@@ -3,17 +3,16 @@
 <style type="text/css">
 @font-face{
     font-family: 'Saitamaar';
-    src: url('fonts/Saitamaar.eot') format('eot'),
-    url('fonts/Saitamaar.woff') format('woff'),
-    url('fonts/Saitamaar.ttf') format('truetype');
+    src: url('https://tar-bin.github.io/ARC_Template_Generator/fonts/Saitamaar.eot') format('eot'),
+    url('https://tar-bin.github.io/ARC_Template_Generator/Saitamaar.woff') format('woff'),
+    url('https://tar-bin.github.io/ARC_Template_Generator/onts/Saitamaar.ttf') format('truetype');
     font-weight: normal;
     font-style: normal;
 }
 .aa {
     font-family: 'Saitamaar', 'ＭＳ Ｐゴシック', 'MS PGothic', 'IPAMonaPGothic' !important;
-}
-.aa p:first-line {
-    font-family: 'ＭＳ Ｐゴシック', 'MS PGothic', 'Saitamaar', 'IPAMonaPGothic' !important;
+    line-height:18px;
+    font-size:16px;
 }
 
 html, body, #editor {
@@ -70,12 +69,12 @@ textarea {
       return allText;
   }
 
-var vue = new Vue({
-    el: '#editor',
-    data: {
-        input: readTextFile("template/card_description_template.txt")
-    }
-});
+  var vue = new Vue({
+      el: '#editor',
+      data: {
+          input: readTextFile("template/card_description_template.txt")
+      }
+  });
 
 }).call(this);
 </script>
