@@ -3,9 +3,9 @@
 <style type="text/css">
 @font-face{
     font-family: 'Saitamaar';
-    src: url('https://tar-bin.github.io/ARC_Template_Generator/fonts/Saitamaar.eot') format('eot'),
-    url('https://tar-bin.github.io/ARC_Template_Generator/Saitamaar.woff') format('woff'),
-    url('https://tar-bin.github.io/ARC_Template_Generator/onts/Saitamaar.ttf') format('truetype');
+    src: url('fonts/Saitamaar.eot') format('eot'),
+    url('fonts/Saitamaar.woff') format('woff'),
+    url('fonts/Saitamaar.ttf') format('truetype');
     font-weight: normal;
     font-style: normal;
 }
@@ -42,9 +42,9 @@ textarea {
 }
 </style>
 
-<div id="editor" class="aa">
-    <textarea v-model="input" debounce="300"></textarea>
-    <textarea v-model="input" debounce="300"></textarea>
+<div id="editor">
+    <textarea class="aa" v-model="input" debounce="300"></textarea>
+    <textarea class="aa" v-model="input" debounce="300"></textarea>
 </div>
 
 <script>
