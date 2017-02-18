@@ -166,7 +166,7 @@ body {
       watch: {
         input: function(val, oldVal) {
           if (!val) return '';
-          this.items = this.trimItems(val);
+          this.items = this.searchTemplateItems(val);
           this.output = this.updateTemplate(val, this.item_datas);
         },
         item_datas: function(val, oldVal) {
