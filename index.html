@@ -253,6 +253,8 @@ body {
     }
   }
 
+  var subQueryCache = {};
+
   // ページ読み込みの完了後にデータをリクエスト
   google.setOnLoadCallback(function() {
     var subQuery = function(dataSource, queryLanguage, callback) {
@@ -287,45 +289,28 @@ body {
             // テンプレートファイルを選択された属性に変更
             vue.changeTemplateSelected(kind);
             // キーから属性ごとの値を問い合わせ
-            if (kind == "エゴ") {
-              var queryLanguage = `select * WHERE A = '${tableId}' AND B = ${id}`;
+            if (kind in subQueryCache) {
+              // キャッシュが存在する場合
+              // Viewのデータのupdate
+              vue.item_datas = $.extend(true, items, subQueryCache[kind][tableId][id]);
+            } else {
+              // キャッシュが存在しない場合
+              // 初回に一度全て読み込んでキャッシュ
+              subQueryCache[kind] = {};
+              var queryLanguage = `select *`;
               subQuery(DATASOURCES[kind], queryLanguage, function(data) {
-                var template_data = $.extend(true, {}, items);
-                for (var col = 0; col < data.getNumberOfColumns(); col++) {
-                  template_data[data.getColumnLabel(col)] = (data.getValue(0, col));
+                template_datas = { 'A': {}, 'B': {}, 'C': {}, 'D': {}, 'E': {} };
+                for (var row = 0; row < data.getNumberOfRows(); row++) {
+                  var template_data = {};
+                  for (var col = 0; col < data.getNumberOfColumns(); col++) {
+                    template_data[data.getColumnLabel(col)] = data.getValue(row, col);
+                  }
+                  template_datas[template_data["属性種別ID"]][template_data["属性種別通し番号"]] = template_data;
                 }
+                // キャッシュの保存
+                subQueryCache[kind] = template_datas;
                 // Viewのデータのupdate
-                vue.item_datas = template_data;
-              });
-            } else if (kind == "アルマ") {
-              var queryLanguage = `select * WHERE A = '${tableId}' AND B = ${id}`;
-              subQuery(DATASOURCES[kind], queryLanguage, function(data) {
-                var template_data = $.extend(true, {}, items);
-                for (var col = 0; col < data.getNumberOfColumns(); col++) {
-                  template_data[data.getColumnLabel(col)] = (data.getValue(0, col));
-                }
-                // Viewのデータのupdate
-                vue.item_datas = template_data;
-              });
-            } else if (kind == "リフレ") {
-              var queryLanguage = `select * WHERE A = '${tableId}' AND B = ${id}`;
-              subQuery(DATASOURCES[kind], queryLanguage, function(data) {
-                var template_data = $.extend(true, {}, items);
-                for (var col = 0; col < data.getNumberOfColumns(); col++) {
-                  template_data[data.getColumnLabel(col)] = (data.getValue(0, col));
-                }
-                // Viewのデータのupdate
-                vue.item_datas = template_data;
-              });
-            } else if (kind == "コグニ") {
-              var queryLanguage = `select * WHERE A = '${tableId}' AND B = ${id}`;
-              subQuery(DATASOURCES[kind], queryLanguage, function(data) {
-                var template_data = $.extend(true, {}, items);
-                for (var col = 0; col < data.getNumberOfColumns(); col++) {
-                  template_data[data.getColumnLabel(col)] = (data.getValue(0, col));
-                }
-                // Viewのデータのupdate
-                vue.item_datas = template_data;
+                vue.item_datas = $.extend(true, items, subQueryCache[kind][tableId][id]);
               });
             }
           }
