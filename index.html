@@ -185,7 +185,7 @@ body {
         input_template: function(val, oldVal) {
           if (!val) return;
           this.input = readTextFile(val.filepath);
-          if (!val.template_items_default_data) {
+          if (val.template_items_default_data) {
             this.item_datas = val.template_items_default_data;
           }
         },
