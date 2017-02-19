@@ -31,6 +31,10 @@ html, body {
 body {
   padding-top: 70px;
 }
+.left_navigation_list {
+  height: 100%;
+  overflow-y: scroll;
+}
 .template_textarea_div {
   width: 100%;
   height: 50%;
@@ -72,18 +76,81 @@ body {
 <div id="editor">
   <div class="row">
     <!-- 左ナビゲーションリスト -->
-    <div class="col-md-2">
+    <div class="col-md-2 left_navigation_list">
       <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+        <!-- A_勇気 -->
         <div class="panel panel-default">
-          <div class="panel-heading" role="tab">
+          <div class="panel-heading" role="tab" id="heading_A">
             <h4 class="panel-title">
-              <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                Collapsible Group Item #1
+              <a role="button" data-toggle="collapse" data-parent="#accordion"
+               href="#collapse_A" aria-expanded="true" aria-controls="collapse_A">
+                A_勇気
               </a>
             </h4>
           </div>
-          <div class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
-            <div class="panel-body" id="view_div"></div>
+          <div id="collapse_A" class="panel-collapse collapse in"
+           role="tabpanel" aria-labelledby="heading_A">
+            <div class="panel-body" id="view_div_a"></div>
+          </div>
+        </div>
+        <!-- B_恐怖 -->
+        <div class="panel panel-default">
+          <div class="panel-heading" role="tab" id="heading_B">
+            <h4 class="panel-title">
+              <a role="button" data-toggle="collapse" data-parent="#accordion"
+               href="#collapse_B" aria-expanded="false" aria-controls="collapse_B">
+                B_恐怖
+              </a>
+            </h4>
+          </div>
+          <div id="collapse_B" class="panel-collapse collapse in"
+           role="tabpanel" aria-labelledby="heading_B">
+            <div class="panel-body" id="view_div_b"></div>
+          </div>
+        </div>
+        <!-- C_理性 -->
+        <div class="panel panel-default">
+          <div class="panel-heading" role="tab" id="heading_C">
+            <h4 class="panel-title">
+              <a role="button" data-toggle="collapse" data-parent="#accordion"
+               href="#collapse_C" aria-expanded="false" aria-controls="collapse_C">
+                C_理性
+              </a>
+            </h4>
+          </div>
+          <div id="collapse_C" class="panel-collapse collapse in"
+           role="tabpanel" aria-labelledby="heading_C">
+            <div class="panel-body" id="view_div_c"></div>
+          </div>
+        </div>
+        <!-- D_悦楽 -->
+        <div class="panel panel-default">
+          <div class="panel-heading" role="tab" id="heading_D">
+            <h4 class="panel-title">
+              <a role="button" data-toggle="collapse" data-parent="#accordion"
+               href="#collapse_D" aria-expanded="false" aria-controls="collapse_D">
+                D_悦楽
+              </a>
+            </h4>
+          </div>
+          <div id="collapse_D" class="panel-collapse collapse in"
+           role="tabpanel" aria-labelledby="heading_D">
+            <div class="panel-body" id="view_div_d"></div>
+          </div>
+        </div>
+        <!-- E_無 -->
+        <div class="panel panel-default">
+          <div class="panel-heading" role="tab" id="heading_E">
+            <h4 class="panel-title">
+              <a role="button" data-toggle="collapse" data-parent="#accordion"
+               href="#collapse_E" aria-expanded="false" aria-controls="collapse_E">
+                E_無
+              </a>
+            </h4>
+          </div>
+          <div id="collapse_E" class="panel-collapse collapse in"
+           role="tabpanel" aria-labelledby="heading_E">
+            <div class="panel-body" id="view_div_e"></div>
           </div>
         </div>
       </div>
@@ -149,17 +216,24 @@ body {
 
   // ページ読み込みの完了後にデータをリクエスト
   google.setOnLoadCallback(function() {
-    var query = new google.visualization.Query(DATASOURCES["全カード一覧"]);
-    var queryLanguage = 'select B, C ORDER BY A';
-    query.setQuery(queryLanguage);
-    query.send(function (response) {
-      var data = response.getDataTable();
-      var view = new google.visualization.DataView(data);
-      var container = document.getElementById('view_div');
-      console.log(container);
-      var table = new google.visualization.Table(container);
-      table.draw(view);
-    });
+    var getAndUpdateData = function(dataSource, tableDivName) {
+      var query = new google.visualization.Query(dataSource);
+      var queryLanguage = "select B,E,F ORDER BY B LABEL B 'ID'";
+      query.setQuery(queryLanguage);
+      query.send(function (response) {
+        var data = response.getDataTable();
+        var view = new google.visualization.DataView(data);
+        var container = document.getElementById(tableDivName);
+        console.log(container);
+        var table = new google.visualization.Table(container);
+        table.draw(view);
+      });
+    }
+    getAndUpdateData(DATASOURCES["A_勇気"], 'view_div_a');
+    getAndUpdateData(DATASOURCES["B_恐怖"], 'view_div_b');
+    getAndUpdateData(DATASOURCES["C_理性"], 'view_div_c');
+    getAndUpdateData(DATASOURCES["D_悦楽"], 'view_div_d');
+    getAndUpdateData(DATASOURCES["E_無"], 'view_div_e');
   });
 
   var template_files = {
