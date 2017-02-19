@@ -33,7 +33,7 @@ body {
 }
 .left_navigation_list {
   height: 100%;
-  overflow-y: scroll;
+  overflow: scroll;
 }
 .template_textarea_div {
   width: 100%;
@@ -216,24 +216,97 @@ body {
 
   // ページ読み込みの完了後にデータをリクエスト
   google.setOnLoadCallback(function() {
-    var getAndUpdateData = function(dataSource, tableDivName) {
+    var subQuery = function(dataSource, queryLanguage, callback) {
       var query = new google.visualization.Query(dataSource);
-      var queryLanguage = "select B,E,F ORDER BY B LABEL B 'ID'";
+      query.setQuery(queryLanguage);
+      query.send(function (response) {
+        var data = response.getDataTable();
+        callback(data);
+      });
+    }
+    var getAndUpdateData = function(dataSource, tableId, tableDivName) {
+      var query = new google.visualization.Query(dataSource);
+      var queryLanguage = "select * ORDER BY A LABEL A 'ID'";
       query.setQuery(queryLanguage);
       query.send(function (response) {
         var data = response.getDataTable();
         var view = new google.visualization.DataView(data);
         var container = document.getElementById(tableDivName);
-        console.log(container);
         var table = new google.visualization.Table(container);
+        // select event handler
+        google.visualization.events.addListener(table, 'select', function(e) {
+          var selectedItem = table.getSelection()[0];
+          if (selectedItem) {
+            // 各属性テーブルの入力値の取得
+            var items = {}
+            for (var col = 0; col < data.getNumberOfColumns(); col++) {
+              items[data.getColumnLabel(col)] = (data.getValue(selectedItem.row, col));
+            }
+            // idと属性を取得
+            var id = items["ID"];
+            var kind = items["カード種別"];
+            // キーから属性ごとの値を問い合わせ
+            if (kind == "エゴ") {
+              var queryLanguage = `select * WHERE A = '${tableId}' AND B = ${id}`;
+              subQuery(DATASOURCES[kind], queryLanguage, function(data) {
+                var template_data = $.extend(true, {}, items);
+                for (var col = 0; col < data.getNumberOfColumns(); col++) {
+                  template_data[data.getColumnLabel(col)] = (data.getValue(0, col));
+                }
+                // Viewのデータのupdate
+                vue.item_datas = template_data;
+              });
+            } else if (kind == "アルマ") {
+              var queryLanguage = `select * WHERE A = '${tableId}' AND B = ${id}`;
+              subQuery(DATASOURCES[kind], queryLanguage, function(data) {
+                var template_data = $.extend(true, {}, items);
+                for (var col = 0; col < data.getNumberOfColumns(); col++) {
+                  template_data[data.getColumnLabel(col)] = (data.getValue(0, col));
+                }
+                // Viewのデータのupdate
+                vue.item_datas = template_data;
+              });
+            } else if (kind == "リフレ") {
+              var queryLanguage = `select * WHERE A = '${tableId}' AND B = ${id}`;
+              subQuery(DATASOURCES[kind], queryLanguage, function(data) {
+                var template_data = $.extend(true, {}, items);
+                for (var col = 0; col < data.getNumberOfColumns(); col++) {
+                  template_data[data.getColumnLabel(col)] = (data.getValue(0, col));
+                }
+                // Viewのデータのupdate
+                vue.item_datas = template_data;
+              });
+            } else if (kind == "コグニ") {
+              var queryLanguage = `select * WHERE A = '${tableId}' AND B = ${id}`;
+              subQuery(DATASOURCES[kind], queryLanguage, function(data) {
+                var template_data = $.extend(true, {}, items);
+                for (var col = 0; col < data.getNumberOfColumns(); col++) {
+                  template_data[data.getColumnLabel(col)] = (data.getValue(0, col));
+                }
+                // Viewのデータのupdate
+                vue.item_datas = template_data;
+              });
+            } else if (kind == "Ex") {
+              var queryLanguage = `select * WHERE A = '${tableId}' AND B = ${id}`;
+              subQuery(DATASOURCES[kind], queryLanguage, function(data) {
+                var template_data = $.extend(true, {}, items);
+                for (var col = 0; col < data.getNumberOfColumns(); col++) {
+                  template_data[data.getColumnLabel(col)] = (data.getValue(0, col));
+                }
+                // Viewのデータのupdate
+                vue.item_datas = template_data;
+              });
+            }
+          }
+        });
         table.draw(view);
       });
     }
-    getAndUpdateData(DATASOURCES["A_勇気"], 'view_div_a');
-    getAndUpdateData(DATASOURCES["B_恐怖"], 'view_div_b');
-    getAndUpdateData(DATASOURCES["C_理性"], 'view_div_c');
-    getAndUpdateData(DATASOURCES["D_悦楽"], 'view_div_d');
-    getAndUpdateData(DATASOURCES["E_無"], 'view_div_e');
+    getAndUpdateData(DATASOURCES["A_勇気"], 'A', 'view_div_a');
+    getAndUpdateData(DATASOURCES["B_恐怖"], 'B', 'view_div_b');
+    getAndUpdateData(DATASOURCES["C_理性"], 'C', 'view_div_c');
+    getAndUpdateData(DATASOURCES["D_悦楽"], 'D', 'view_div_d');
+    getAndUpdateData(DATASOURCES["E_無"], 'E', 'view_div_e');
   });
 
   var template_files = {
