@@ -324,23 +324,6 @@ body {
   });
 
   var template_files = {
-    "カード説明欄_テンプレートサンプル": {
-      filepath: "template/card_description_template_sample.txt",
-      template_items_default_data: {
-         "カード名": "無名英雄",
-         "メイン属性": "勇気",
-         "サブ属性": "ヒーロー",
-         "レアリティ": "E",
-         "汎用スキル１": "【エゴ】",
-         "汎用スキル２": "【残響】",
-         "カードスキル": "残響：デッキからヒーローカードをランダムに一枚手札に加える",
-         "武装化": "-",
-         "AP": "02",
-         "RP": "04",
-         "CP": "03",
-         "フレーバー": "俺は脇役だ。だけど英雄になれない理由はない。――無名英雄"
-      }
-    },
     "エゴ": {
       filepath: "template/card_description_template_ego.txt",
     },
@@ -355,18 +338,29 @@ body {
     }
   }
 
-  var init_template = template_files["カード説明欄_テンプレートサンプル"];
-
   var vue = new Vue({
       el: '#editor',
       data: {
-          template_selected: "",
+          template_selected: null,
           template_files: template_files,
           input_template: null,
           input: "",
           output: "",
           items: [],
-          item_datas: {},
+          item_datas: {
+            "カード名": "無名英雄",
+            "メイン属性": "勇気",
+            "サブ属性": "ヒーロー",
+            "レアリティ": "E",
+            "汎用スキル１": "【エゴ】",
+            "汎用スキル２": "【残響】",
+            "カードスキル": "残響：デッキからヒーローカードをランダムに一枚手札に加える",
+            "武装化": "-",
+            "AP": "02",
+            "RP": "04",
+            "CP": "03",
+            "フレーバー": "俺は脇役だ。だけど英雄になれない理由はない。――無名英雄"
+          },
           help_message: "{{ keyword }} でテンプレート入力できます。テンプレートを追加/削除すると入力欄が自動で更新されます。"
       },
       watch: {
@@ -376,10 +370,6 @@ body {
         },
         input_template: function(val, oldVal) {
           if (!val) return;
-          if (val.template_items_default_data) {
-            this.item_datas = val.template_items_default_data;
-          }
-          console.log(val.filepath);
           var req = new XMLHttpRequest();
           req.open("GET", val.filepath, true);
           req.setRequestHeader('Pragma', 'no-cache');
@@ -387,7 +377,6 @@ body {
           req.setRequestHeader('If-Modified-Since', 'Sat, 01 Jan 2000 00:00:00 GMT');
           req.send(null);
           req.onload = function() {
-            console.log(req.responseText);
             this.input = req.responseText;
           }.bind(this);
         },
@@ -423,7 +412,7 @@ body {
         }
       },
       created() {
-        this.input_template = init_template;
+        this.template_selected = template_files["エゴ"];
       }
   });
 
