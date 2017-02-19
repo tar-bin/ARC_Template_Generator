@@ -398,7 +398,8 @@ body {
           if (!string || !values) return '';
           return string.replace(/\{\{(.*?)\}\}/g, function(all, key) {
             key = key.trim();
-            return Object.prototype.hasOwnProperty.call(values, key) ? values[key] : "";
+            var value = Object.prototype.hasOwnProperty.call(values, key) ? values[key] : "";
+            return value ? value : "";
           });
         },
         updateOutput() {
