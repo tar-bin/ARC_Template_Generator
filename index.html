@@ -238,6 +238,21 @@ body {
 
   var DATASOURCES = getDataSources(DATASOURCE_KEY, DATASOURCE_GIDS);
 
+  var TEMPLATE_FILES = {
+    "エゴ": {
+      filepath: "template/card_description_template_ego.txt",
+    },
+    "アルマ": {
+      filepath: "template/card_description_template_alma.txt",
+    },
+    "リフレ": {
+      filepath: "template/card_description_template_refle.txt",
+    },
+    "コグニ": {
+      filepath: "template/card_description_template_cogni.txt",
+    }
+  }
+
   // ページ読み込みの完了後にデータをリクエスト
   google.setOnLoadCallback(function() {
     var subQuery = function(dataSource, queryLanguage, callback) {
@@ -325,26 +340,11 @@ body {
     getAndUpdateData(DATASOURCES["E_無"], 'E', 'view_div_e');
   });
 
-  var template_files = {
-    "エゴ": {
-      filepath: "template/card_description_template_ego.txt",
-    },
-    "アルマ": {
-      filepath: "template/card_description_template_alma.txt",
-    },
-    "リフレ": {
-      filepath: "template/card_description_template_refle.txt",
-    },
-    "コグニ": {
-      filepath: "template/card_description_template_cogni.txt",
-    }
-  }
-
   var vue = new Vue({
       el: '#editor',
       data: {
           template_selected: null,
-          template_files: template_files,
+          template_files: TEMPLATE_FILES,
           input_template: null,
           input: "",
           output: "",
@@ -413,11 +413,11 @@ body {
           this.output = this.updateTemplate(this.input, this.item_datas);
         },
         changeTemplateSelected(kind) {
-          this.template_selected = template_files[kind];
+          this.template_selected = TEMPLATE_FILES[kind];
         }
       },
       created() {
-        this.template_selected = template_files["エゴ"];
+        this.template_selected = TEMPLATE_FILES["エゴ"];
       }
   });
 
