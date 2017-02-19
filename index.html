@@ -216,7 +216,6 @@ body {
     "アルマ": '0',
     "リフレ": '2136352117',
     "コグニ": '977049733',
-    "Ex": '383039139'
   }
 
   function getDataSources(key, gids) {
@@ -301,16 +300,6 @@ body {
                 // Viewのデータのupdate
                 vue.item_datas = template_data;
               });
-            } else if (kind == "Ex") {
-              var queryLanguage = `select * WHERE A = '${tableId}' AND B = ${id}`;
-              subQuery(DATASOURCES[kind], queryLanguage, function(data) {
-                var template_data = $.extend(true, {}, items);
-                for (var col = 0; col < data.getNumberOfColumns(); col++) {
-                  template_data[data.getColumnLabel(col)] = (data.getValue(0, col));
-                }
-                // Viewのデータのupdate
-                vue.item_datas = template_data;
-              });
             }
           }
         });
@@ -353,10 +342,7 @@ body {
     },
     "カード説明欄_コグニ": {
       filepath: "template/card_description_template.txt",
-    },
-    "カード説明欄_Ex": {
-      filepath: "template/card_description_template.txt",
-    },
+    }
   }
 
   var init_template = template_files["カード説明欄_テンプレートサンプル"];
