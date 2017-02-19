@@ -5,6 +5,7 @@
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+<script type="text/javascript" src="http://www.google.com/jsapi"></script>
 
 <style type="text/css">
 @font-face{
@@ -119,6 +120,41 @@ body {
 
 <script>
 (function() {
+  // Google Visualization APIの読み込み
+  google.load("visualization", "1");
+
+  // データソース URL
+  var DATASOURCE_KEY = '1N7TNyO-j2xJMPP3niroZvdbha7gja0HmfAg6n2wKXUE';
+  var DATASOURCE_GID = {
+    "全カード一覧": '1817486152',
+    "A_勇気": '81694205',
+    "B_恐怖": '174328829',
+    "C_理性": '1496957367',
+    "D_悦楽": '1079225792',
+    "E_無": '148785403',
+    "エゴ": '545979998',
+    "アルマ": '0',
+    "リフレ": '2136352117',
+    "コグニ": '977049733',
+    "Ex": '383039139',
+  }
+
+  function getDataSource(key, gid) {
+    return `http://spreadsheets.google.com/tq?key=${key}&gid=${gid}&pub=1`;
+  }
+  var dataSource = getDataSource(DATASOURCE_KEY, DATASOURCE_GID["全カード一覧"]);
+
+  // ページ読み込みの完了後にデータをリクエスト
+  google.setOnLoadCallback(function() {
+    var query = new google.visualization.Query(dataSource);
+    var queryLanguage = 'select B, C';
+    query.setQuery(queryLanguage);
+    query.send(function (response) {
+      var data = response.getDataTable();
+      console.log(data);
+    });
+  });
+
   var template_files = {
     "カード説明欄_テンプレートサンプル": {
       filepath: "template/card_description_template_sample.txt",
