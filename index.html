@@ -156,19 +156,13 @@ body {
 
   var init_template = template_files["カード説明欄_テンプレートサンプル"];
 
-  function readTextFile(file) {
-      var allText = "";
-      var rawFile = new XMLHttpRequest();
-      rawFile.open("GET", file, false);
-      rawFile.onreadystatechange = function () {
-          if(rawFile.readyState === 4) {
-              if(rawFile.status === 200 || rawFile.status == 0) {
-                  allText = rawFile.responseText;
-              }
-          }
-      }
-      rawFile.send(null);
-      return allText;
+  function readTextFile(file, callback) {
+    var req = new XMLHttpRequest();
+    req.open("GET", file, true);
+    req.send(null);
+    req.onload = function(){
+      callback(req.responseText);
+    }
   }
 
   var vue = new Vue({
@@ -184,10 +178,12 @@ body {
       watch: {
         input_template: function(val, oldVal) {
           if (!val) return;
-          this.input = readTextFile(val.filepath);
           if (val.template_items_default_data) {
             this.item_datas = val.template_items_default_data;
           }
+          readTextFile(val.filepath, function(val) {
+            this.input = val;
+          }.bind(this));
         },
         input: function(val, oldVal) {
           if (!val) return;
