@@ -75,17 +75,15 @@ body {
     <div class="col-md-2">
       <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
         <div class="panel panel-default">
-          <div class="panel-heading" role="tab" id="headingOne">
+          <div class="panel-heading" role="tab">
             <h4 class="panel-title">
               <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
                 Collapsible Group Item #1
               </a>
             </h4>
           </div>
-          <div id="collapseOne" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
-            <div class="panel-body">
-              Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.
-            </div>
+          <div class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
+            <div class="panel-body" id="view_div"></div>
           </div>
         </div>
       </div>
@@ -121,11 +119,11 @@ body {
 <script>
 (function() {
   // Google Visualization APIの読み込み
-  google.load("visualization", "1");
+  google.load("visualization", "1", {packages:['table']});
 
   // データソース URL
   var DATASOURCE_KEY = '1N7TNyO-j2xJMPP3niroZvdbha7gja0HmfAg6n2wKXUE';
-  var DATASOURCE_GID = {
+  var DATASOURCE_GIDS = {
     "全カード一覧": '1817486152',
     "A_勇気": '81694205',
     "B_恐怖": '174328829',
@@ -136,22 +134,31 @@ body {
     "アルマ": '0',
     "リフレ": '2136352117',
     "コグニ": '977049733',
-    "Ex": '383039139',
+    "Ex": '383039139'
   }
 
-  function getDataSource(key, gid) {
-    return `http://spreadsheets.google.com/tq?key=${key}&gid=${gid}&pub=1`;
+  function getDataSources(key, gids) {
+    var items = {};
+    for (var gid in gids) {
+      items[gid] = `http://spreadsheets.google.com/tq?key=${key}&gid=${gids[gid]}&pub=1`;
+    }
+    return items;
   }
-  var dataSource = getDataSource(DATASOURCE_KEY, DATASOURCE_GID["全カード一覧"]);
+
+  var DATASOURCES = getDataSources(DATASOURCE_KEY, DATASOURCE_GIDS);
 
   // ページ読み込みの完了後にデータをリクエスト
   google.setOnLoadCallback(function() {
-    var query = new google.visualization.Query(dataSource);
-    var queryLanguage = 'select B, C';
+    var query = new google.visualization.Query(DATASOURCES["全カード一覧"]);
+    var queryLanguage = 'select B, C ORDER BY A';
     query.setQuery(queryLanguage);
     query.send(function (response) {
       var data = response.getDataTable();
-      console.log(data);
+      var view = new google.visualization.DataView(data);
+      var container = document.getElementById('view_div');
+      console.log(container);
+      var table = new google.visualization.Table(container);
+      table.draw(view);
     });
   });
 
