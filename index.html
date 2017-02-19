@@ -35,22 +35,25 @@ body {
   height: 100%;
   overflow: scroll;
 }
+.template_select_form {
+  height: 5%;
+  padding: 10px;
+}
 .template_textarea_div {
   width: 100%;
-  height: 50%;
+  height: 45%;
   padding: 10px;
 }
 .template_textarea {
   width: 100%;
   height: 100%;
-  padding: 10px;
 }
 .template_inputarea {
   overflow-x: hidden;
   overflow-y: scroll;
   width: 100%;
-  height: 45%;
-  margin-top: 20px;
+  height: 50%;
+  padding-top: 30px;
 }
 .output_textarea_div {
   width: 100%;
@@ -172,6 +175,13 @@ body {
     </div>
     <!-- テンプレート入力エリア -->
     <div class="col-md-5">
+      <div class="template_select_form">
+        <select class="form-control" v-model="template_selected">
+          <option v-for="(template_file, key) in template_files" v-bind:value="template_file">
+            {{ key }}
+          </option>
+        </select>
+      </div>
       <div class="template_textarea_div">
         <textarea class="template_textarea aa" v-model="input" debounce="300"></textarea>
         <span id="helpBlock2" class="help-block">{{ help_message }}</span>
@@ -331,34 +341,27 @@ body {
          "フレーバー": "俺は脇役だ。だけど英雄になれない理由はない。――無名英雄"
       }
     },
-    "カード説明欄_エゴ": {
-      filepath: "template/card_description_template.txt",
+    "エゴ": {
+      filepath: "template/card_description_template_ego.txt",
     },
-    "カード説明欄_アルマ": {
-      filepath: "template/card_description_template.txt",
+    "アルマ": {
+      filepath: "template/card_description_template_alma.txt",
     },
-    "カード説明欄_リフレ": {
-      filepath: "template/card_description_template.txt",
+    "リフレ": {
+      filepath: "template/card_description_template_refle.txt",
     },
-    "カード説明欄_コグニ": {
-      filepath: "template/card_description_template.txt",
+    "コグニ": {
+      filepath: "template/card_description_template_cogni.txt",
     }
   }
 
   var init_template = template_files["カード説明欄_テンプレートサンプル"];
 
-  function readTextFile(file, callback) {
-    var req = new XMLHttpRequest();
-    req.open("GET", file, true);
-    req.send(null);
-    req.onload = function(){
-      callback(req.responseText);
-    }
-  }
-
   var vue = new Vue({
       el: '#editor',
       data: {
+          template_selected: "",
+          template_files: template_files,
           input_template: null,
           input: "",
           output: "",
@@ -367,14 +370,26 @@ body {
           help_message: "{{ keyword }} でテンプレート入力できます。テンプレートを追加/削除すると入力欄が自動で更新されます。"
       },
       watch: {
+        template_selected: function(val, oldVal) {
+          if (!val) return;
+          this.input_template = val;
+        },
         input_template: function(val, oldVal) {
           if (!val) return;
           if (val.template_items_default_data) {
             this.item_datas = val.template_items_default_data;
           }
-          readTextFile(val.filepath, function(val) {
-            this.input = val;
-          }.bind(this));
+          console.log(val.filepath);
+          var req = new XMLHttpRequest();
+          req.open("GET", val.filepath, true);
+          req.setRequestHeader('Pragma', 'no-cache');
+          req.setRequestHeader('Cache-Control', 'no-cache');
+          req.setRequestHeader('If-Modified-Since', 'Sat, 01 Jan 2000 00:00:00 GMT');
+          req.send(null);
+          req.onload = function() {
+            console.log(req.responseText);
+            this.input = req.responseText;
+          }.bind(this);
         },
         input: function(val, oldVal) {
           if (!val) return;
