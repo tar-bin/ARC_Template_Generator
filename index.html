@@ -1,4 +1,4 @@
-<title>ARC Template Generator</title>
+<title>ARC Viewer / Template Generator</title>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.1.10/vue.min.js"></script>
 <script src="https://code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
@@ -74,7 +74,7 @@ body {
 <nav class="navbar navbar-default navbar-fixed-top">
   <div class="container-fluid">
     <div class="navbar-header">
-      <a class="navbar-brand" href="#">ARC Template Generator</a>
+      <a class="navbar-brand" href="#">ARC Viewer / Template Generator</a>
     </div>
     <ul class="nav navbar-nav navbar-right">
       <li class="link_on_navbar">
@@ -269,6 +269,8 @@ body {
             // idと属性を取得
             var id = items["ID"];
             var kind = items["カード種別"];
+            // テンプレートファイルを選択された属性に変更
+            vue.changeTemplateSelected(kind);
             // キーから属性ごとの値を問い合わせ
             if (kind == "エゴ") {
               var queryLanguage = `select * WHERE A = '${tableId}' AND B = ${id}`;
@@ -409,6 +411,9 @@ body {
         },
         updateOutput() {
           this.output = this.updateTemplate(this.input, this.item_datas);
+        },
+        changeTemplateSelected(kind) {
+          this.template_selected = template_files[kind];
         }
       },
       created() {
