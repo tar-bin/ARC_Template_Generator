@@ -25,4 +25,6 @@ fonts/Saitamaar.woff2
 
 上記のフォント（`Saitamaar`）はのライセンスは `MLT License` で [keage(@keage)](https://twitter.com/keage) 様より提供されています。  
 
-（記載箇所は見当たりませんでしたので、keage様本人に確認済みです）
+[keage/Saitamaar: AA 表示用フォント Saitamaar を AA っぽい要素に適用するスクリプト](https://github.com/keage/Saitamaar)
+
+（現状フォント自体のLicenseの記載箇所は見当たりませんでしたので、keage様本人に確認済みです）
